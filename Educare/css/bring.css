@@ -1,0 +1,129 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #007bff;
+    color: white;
+}
+.navbar .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+}
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.hero {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(to bottom, #007bff, #a6c8ff);
+    color: white;
+}
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+.hero button {
+    padding: 0.5rem 1.5rem;
+    background-color: white;
+    color: #007bff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+#button1:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+.registration-form {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+.form-container {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+}
+.form-container h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+.form-container label {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+.form-container input, .form-container select {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.form-container button {
+    width: 100%;
+    padding: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+.form-container button:hover {
+    background-color: #0056b3;
+}
+
+footer {
+    text-align: center;
+    padding: 80px;
+    background-color: #2c3e50;
+    color: white;
+}
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.footer-links a, .social-media a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+    font-size: 16px;
+}
+.footer-links a:hover, .social-media a:hover {
+    color: #3498db;
+}
+.social-media {
+    margin-top: 10px;
+}
+.social-icon {
+    font-size: 18px;
+    margin: 0 10px;
+}
+.social-media a {
+    padding: 5px 10px;
+    background-color: #34495e;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+.social-media a:hover {
+    background-color: #3498db;
+    color: white;
+}
