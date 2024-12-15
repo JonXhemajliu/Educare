@@ -36,7 +36,9 @@ a {
 .hero {
   text-align: center;
   padding: 2rem;
-  background: linear-gradient(to bottom, #007bff, #a6c8ff);
+  font-weight: bolder;
+  font-size: 50px;
+  background-color: blue;
   color: white;
 }
 
