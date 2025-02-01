@@ -1,5 +1,5 @@
 <?php
-require_once('db.php');
+require_once('../database/db.php');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (isset($_POST['name']) && isset($_POST['password'])) {
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       echo 'Password is correct.<br>';
       session_start();
       $_SESSION['user'] = $user['name'];
-      header("Location: admin.php");
+      header("Location: ../admin/admin.php");
       exit;
     } else {
       echo 'Login Failed - Incorrect password.<br>';

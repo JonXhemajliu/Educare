@@ -7,21 +7,42 @@ $message = ''; // Variable to store success/error messages
 if (isset($_POST['addTeacher'])) {
     $name = $_POST["name"];
     $subject = $_POST["subject"];
+    $image = $_FILES["image"]; // Get the uploaded file
 
-    if (empty($name) || empty($subject)) {
+    if (empty($name) || empty($subject) || empty($image['name'])) {
         $message = "Error: One or more form fields are empty.";
     } else {
-        $sql = "INSERT INTO teachers (name, subject) VALUES (:name, :subject)";
-        $stmt = $pdo->prepare($sql);
-        $result = $stmt->execute(['name' => $name, 'subject' => $subject]);
+        // Handle file upload
+        $uploadDir = "../uploads/"; // Directory to store uploaded images
+        $uploadFile = $uploadDir . basename($image['name']);
 
-        if ($result) {
-            $message = "Teacher added successfully!";
+        // Ensure the upload directory exists
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        // Move the uploaded file to the upload directory
+        if (move_uploaded_file($image['tmp_name'], $uploadFile)) {
+            // Insert teacher data into the database
+            $sql = "INSERT INTO teachers (name, subject, image) VALUES (:name, :subject, :image)";
+            $stmt = $pdo->prepare($sql);
+            $result = $stmt->execute([
+                'name' => $name,
+                'subject' => $subject,
+                'image' => $uploadFile
+            ]);
+
+            if ($result) {
+                $message = "Teacher added successfully!";
+            } else {
+                $message = "Error: Failed to insert data.";
+            }
         } else {
-            $message = "Error: Failed to insert data.";
+            $message = "Error: Failed to upload image.";
         }
     }
 }
+
 
 // DELETING TEACHERS
 if (isset($_POST['deleteTeacher']) && isset($_POST['teacher_id']) && !empty($_POST['teacher_id'])) {
@@ -59,12 +80,38 @@ if (isset($_POST['updateTeachers'])) {
     $teacher_id = $_POST['teacher_id'];
     $name = $_POST['name'];
     $subject = $_POST['subject'];
-
+    $image = $_FILES['image']; // Get the uploaded file
 
     if (!empty($name) && !empty($subject)) {
-        $sqlUPDATE = "UPDATE teachers SET name = :name, subject = :subject WHERE id = :teacher_id";
+        // If a new image is uploaded
+        if (!empty($image['name'])) {
+            $uploadDir = "../uploads/";
+            $uploadFile = $uploadDir . basename($image['name']);
+
+            // Move the uploaded file
+            if (move_uploaded_file($image['tmp_name'], $uploadFile)) {
+                $image = $uploadFile;
+            } else {
+                $message = "Error: Failed to upload image.";
+                return;
+            }
+        } else {
+            // Keep the existing image path
+            $sqlFetchImage = "SELECT image FROM teachers WHERE id = :teacher_id";
+            $stmtFetchImage = $pdo->prepare($sqlFetchImage);
+            $stmtFetchImage->execute(['teacher_id' => $teacher_id]);
+            $image = $stmtFetchImage->fetchColumn();
+        }
+
+        // Update the teacher's data
+        $sqlUPDATE = "UPDATE teachers SET name = :name, subject = :subject, image = :image WHERE id = :teacher_id";
         $stmtUPDATE = $pdo->prepare($sqlUPDATE);
-        $resultUPDATE = $stmtUPDATE->execute(['name' => $name, 'subject' => $subject, 'teacher_id' => $teacher_id]);
+        $resultUPDATE = $stmtUPDATE->execute([
+            'name' => $name,
+            'subject' => $subject,
+            'image' => $image,
+            'teacher_id' => $teacher_id
+        ]);
 
         if ($resultUPDATE) {
             $message = "Teacher updated successfully!";
@@ -75,7 +122,6 @@ if (isset($_POST['updateTeachers'])) {
         }
     }
 }
-
 
 
 ?>
@@ -117,6 +163,7 @@ if (isset($_POST['updateTeachers'])) {
                     </div>
                 <?php endif; ?>
 
+                <button class="btn btn-add" onclick="openAddModal()">Add Teacher</button>
 
 
                 <table>
@@ -124,6 +171,7 @@ if (isset($_POST['updateTeachers'])) {
                         <tr>
                             <th>Name</th>
                             <th>Subject</th>
+                            <th>Image</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -132,6 +180,13 @@ if (isset($_POST['updateTeachers'])) {
                             <tr>
                                 <td><?php echo $info['name']; ?></td>
                                 <td><?php echo $info['subject']; ?></td>
+                                <td>
+                                    <?php if (!empty($info['image'])): ?>
+                                        <img src="<?php echo $info['image']; ?>" alt="Teacher Image" style="width: 50px; height: 50px;">
+                                    <?php else: ?>
+                                        No Image
+                                    <?php endif; ?>
+                                </td>
                                 <td>
                                     <form method="POST" action="">
                                         <input type="hidden" name="teacher_id" value="<?php echo $info['ID']; ?>">
@@ -142,9 +197,7 @@ if (isset($_POST['updateTeachers'])) {
                             </tr>
                         <?php endwhile; ?>
                     </tbody>
-                    <button class="btn btn-add" onclick="openModal()">Add Teacher</button>
                 </table>
-
             </div>
         </div>
     </div>
@@ -153,7 +206,7 @@ if (isset($_POST['updateTeachers'])) {
         <div class="modal-content">
             <span class="close" onclick="closeEditModal()">&times;</span>
             <h2>Edit Teacher</h2>
-            <form action="" method="POST">
+            <form action="" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="teacher_id" id="edit_teacher_id">
                 <div class="form-group">
                     <label for="edit_name">Name:</label>
@@ -163,16 +216,21 @@ if (isset($_POST['updateTeachers'])) {
                     <label for="edit_subject">Subject:</label>
                     <input type="text" id="edit_subject" name="subject" required>
                 </div>
+                <div class="form-group">
+                    <label for="edit_image">Upload New Image:</label>
+                    <input type="file" id="edit_image" name="image" accept="image/*">
+                </div>
                 <button type="submit" name="updateTeachers" class="btn-submit">Update Teacher</button>
             </form>
         </div>
     </div>
 
+    <!-- Add Teacher Modal -->
     <div id="addTeacherModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span class="close" onclick="closeAddModal()">&times;</span>
             <h2>Add Teacher</h2>
-            <form action="" method="POST">
+            <form action="" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="name">Name:</label>
                     <input type="text" id="name" name="name" required>
@@ -180,6 +238,10 @@ if (isset($_POST['updateTeachers'])) {
                 <div class="form-group">
                     <label for="subject">Subject:</label>
                     <input type="text" id="subject" name="subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="image">Upload Image:</label>
+                    <input type="file" id="image" name="image" accept="image/*" required>
                 </div>
                 <button type="submit" name="addTeacher" class="btn-submit">Add Teacher</button>
             </form>

@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($firstname) || empty($email) || empty($password)) {
         echo "Error: One or more form fields are empty.";
     } else {
-        header("Location: guest.php");
+        header("Location: ../admin/admin.php");
         exit;
     }
 }

@@ -17,6 +17,22 @@ $teachers = $stmtFETCH->fetchAll(PDO::FETCH_ASSOC);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Educare</title>
   <link rel="stylesheet" href="../css/style.css">
+
+  <!--Google Links-->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://font.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/boxicons@latest/css/boxicons.min.css" />
+
+  <!-- -->
+
 </head>
 
 <body>
@@ -86,13 +102,15 @@ $teachers = $stmtFETCH->fetchAll(PDO::FETCH_ASSOC);
         <div class="team-grid">
           <?php foreach ($teachers as $teacher): ?>
             <div class="team-member">
-              <img src="../assets/placeholder.jpg" alt="<?php echo htmlspecialchars($teacher['name']); ?>">
+              <!-- Dynamic Image Path -->
+              <img src="<?php echo htmlspecialchars($teacher['image']); ?>" alt="<?php echo htmlspecialchars($teacher['name']); ?>">
               <h4><?php echo htmlspecialchars($teacher['name']); ?></h4>
               <p><?php echo htmlspecialchars($teacher['subject']); ?></p>
             </div>
           <?php endforeach; ?>
         </div>
       </section>
+
     </main>
 
     <!--Footer-->
