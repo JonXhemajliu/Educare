@@ -1,3 +1,14 @@
+<?php
+include('../database/db.php');
+
+// VIEW TEACHERS
+$sqlFETCH = "SELECT * FROM teachers";
+$stmtFETCH = $pdo->prepare($sqlFETCH);
+$stmtFETCH->execute();
+$teachers = $stmtFETCH->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -73,46 +84,13 @@
       <section class="team">
         <h2>Meet Our Team</h2>
         <div class="team-grid">
-          <div class="team-member">
-            <img src="../assets/principal.jpg" alt="Team Member 1">
-            <h4>Jessica Taylor</h4>
-            <p>Principal</p>
-          </div>
-          <div class="team-member">
-            <img src="../assets/science.jpg" alt="Team Member 2">
-            <h4>David Brown</h4>
-            <p>Science Teacher</p>
-          </div>
-          <div class="team-member">
-            <img src="../assets/art.jpg" alt="Team Member 3">
-            <h4>Emily Clark</h4>
-            <p>Art Instructor</p>
-          </div>
-          <div class="team-member">
-            <img src="../assets/music.jpeg" alt="Team Member 3">
-            <h4>Ana Jorge</h4>
-            <p>Music Instructor</p>
-          </div>
-          <div class="team-member">
-            <img src="../assets/tik.jpg" alt="Team Member 3">
-            <h4>Laura Carl</h4>
-            <p>Technology Instructor</p>
-          </div>
-          <div class="team-member">
-            <img src="../assets/physic.jpg" alt="Team Member 3">
-            <h4>Gorge Harris</h4>
-            <p>Physic Teacher</p>
-          </div>
-          <div class="team-member">
-            <img src="../assets/pe.jpg" alt="Team Member 3">
-            <h4>Kamela Smith</h4>
-            <p>PE Teacher</p>
-          </div>
-          <div class="team-member">
-            <img src="../assets/math.jpg" alt="Team Member 3">
-            <h4>Johnson Camill</h4>
-            <p>Math Teacher</p>
-          </div>
+          <?php foreach ($teachers as $teacher): ?>
+            <div class="team-member">
+              <img src="../assets/placeholder.jpg" alt="<?php echo htmlspecialchars($teacher['name']); ?>">
+              <h4><?php echo htmlspecialchars($teacher['name']); ?></h4>
+              <p><?php echo htmlspecialchars($teacher['subject']); ?></p>
+            </div>
+          <?php endforeach; ?>
         </div>
       </section>
     </main>

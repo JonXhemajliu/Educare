@@ -1,5 +1,5 @@
 <?php
-require_once('db.php');
+include('../database/db.php');
 
 
 // ENSURING THAT THE FORM IS SUBMITTED
