@@ -1,3 +1,13 @@
+<?php
+include('../database/db.php');
+
+// FFETCH TEACHERS FROM DB
+$sql = "SELECT * FROM teachers";
+$stmt = $pdo->prepare($sql);
+$stmt->execute();
+$teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -94,36 +104,13 @@
 
   <div class="about-content-title">Our Team</div>
   <div class="team">
-    <div class="teachers">
-      <img src="../assets/principal.jpg" alt="" class="techer-img" />
-      <h3 class="teacher-name">Jessica Taylor</h3>
-      <div class="prof">Principal</div>
-    </div>
-    <div class="teachers">
-      <img src="../assets/science.jpg" alt="" class="techer-img" />
-      <h3 class="teacher-name">David Brown</h3>
-      <div class="prof">Science Teacher</div>
-    </div>
-    <div class="teachers">
-      <img src="../assets/art.jpg" alt="" class="techer-img" />
-      <h3 class="teacher-name">Emily Clark</h3>
-      <div class="prof">Art Instructor</div>
-    </div>
-    <div class="teachers">
-      <img src="../assets/physic.jpg" alt="" class="techer-img" />
-      <h3 class="teacher-name">Adem Jorge</h3>
-      <div class="prof">Physic</div>
-    </div>
-    <div class="teachers">
-      <img src="../assets/tik.jpg" alt="" class="techer-img" />
-      <h3 class="teacher-name">Laura Carl</h3>
-      <div class="prof">Technology Instructor</div>
-    </div>
-    <div class="teachers">
-      <img src="../assets/pe.jpg" alt="" class="techer-img" />
-      <h3 class="teacher-name">Kamela Smith</h3>
-      <div class="prof">PE Teacher</div>
-    </div>
+    <?php foreach ($teachers as $teacher): ?>
+      <div class="teachers">
+        <img src="<?php echo $teacher['image']; ?>" alt="<?php echo $teacher['name']; ?>" class="techer-img" />
+        <h3 class="teacher-name"><?php echo $teacher['name']; ?></h3>
+        <div class="prof"><?php echo $teacher['subject']; ?></div>
+      </div>
+    <?php endforeach; ?>
   </div>
 
   <!--Footer-->
