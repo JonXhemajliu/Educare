@@ -134,7 +134,7 @@ if (isset($_POST['updateTeachers'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="admin.css">
-    <script defer src="admin.js"></script>
+    <script defer src="teachers.js"></script>
 </head>
 
 <body>
@@ -145,7 +145,7 @@ if (isset($_POST['updateTeachers'])) {
             <hr>
             <li><a href="teachers.php">Teachers</a></li>
             <li><a href="activities.php">Activities</a></li>
-            <li><a href="#">Logout</a></li>
+            <li><a href="logout.php">Logout</a></li>
         </ul>
     </div>
     <div class="main-content">

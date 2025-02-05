@@ -137,7 +137,7 @@ if (isset($_POST['updateActivity'])) {
             <hr>
             <li><a href="teachers.php">Teachers</a></li>
             <li><a href="activities.php">Activities</a></li>
-            <li><a href="#">Logout</a></li>
+            <li><a href="logout.php">Logout</a></li>
         </ul>
     </div>
     <div class="main-content">
