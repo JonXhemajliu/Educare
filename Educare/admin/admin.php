@@ -16,7 +16,7 @@
             <li><a href="admin.php">Dashboard</a></li>
             <hr>
             <li><a href="teachers.php">Teachers</a></li>
-            <li><a href="#">Activities</a></li>
+            <li><a href="activities.php">Activities</a></li>
             <li><a href="#">Logout</a></li>
         </ul>
     </div>

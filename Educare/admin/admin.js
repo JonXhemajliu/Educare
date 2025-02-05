@@ -65,3 +65,4 @@ function openEditModal(id, name, subject) {
 function closeEditModal() {
   document.getElementById("editTeacherModal").style.display = "none";
 }
+

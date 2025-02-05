@@ -3,13 +3,12 @@ include('../database/db.php');
 
 $message = ''; // Variable to store success/error messages
 
-// ADDING TEACHERS
-if (isset($_POST['addTeacher'])) {
+// ADDING ACTIVITIES
+if (isset($_POST['addActivity'])) {
     $name = $_POST["name"];
-    $subject = $_POST["subject"];
     $image = $_FILES["image"]; // Get the uploaded file
 
-    if (empty($name) || empty($subject) || empty($image['name'])) {
+    if (empty($name) || empty($image['name'])) {
         $message = "Error: One or more form fields are empty.";
     } else {
         // Handle file upload
@@ -23,17 +22,16 @@ if (isset($_POST['addTeacher'])) {
 
         // Move the uploaded file to the upload directory
         if (move_uploaded_file($image['tmp_name'], $uploadFile)) {
-            // Insert teacher data into the database
-            $sql = "INSERT INTO teachers (name, subject, image) VALUES (:name, :subject, :image)";
+            // Insert activity data into the database
+            $sql = "INSERT INTO activities (name, image) VALUES (:name, :image)";
             $stmt = $pdo->prepare($sql);
             $result = $stmt->execute([
                 'name' => $name,
-                'subject' => $subject,
                 'image' => $uploadFile
             ]);
 
             if ($result) {
-                $message = "Teacher added successfully!";
+                $message = "Activity added successfully!";
             } else {
                 $message = "Error: Failed to insert data.";
             }
@@ -43,46 +41,43 @@ if (isset($_POST['addTeacher'])) {
     }
 }
 
+// DELETING ACTIVITIES
+if (isset($_POST['deleteActivity']) && isset($_POST['activity_id']) && !empty($_POST['activity_id'])) {
+    $activity_id = $_POST['activity_id'];
 
-// DELETING TEACHERS
-if (isset($_POST['deleteTeacher']) && isset($_POST['teacher_id']) && !empty($_POST['teacher_id'])) {
-    $teacher_id = $_POST['teacher_id'];
-
-    // Check if the teacher_id exists and is not empty
-    if (!empty($teacher_id)) {
-        $sqlDELETE = "DELETE FROM teachers WHERE id = :teacher_id";
+    // Check if the activity_id exists and is not empty
+    if (!empty($activity_id)) {
+        $sqlDELETE = "DELETE FROM activities WHERE id = :activity_id";
         $stmtDELETE = $pdo->prepare($sqlDELETE);
-        $resultDELETE = $stmtDELETE->execute(['teacher_id' => $teacher_id]);
+        $resultDELETE = $stmtDELETE->execute(['activity_id' => $activity_id]);
 
         if ($resultDELETE) {
-            $message = "Teacher deleted successfully!";
+            $message = "Activity deleted successfully!";
         } else {
-            $message = "Error: Teacher could not be deleted.";
+            $message = "Error: Activity could not be deleted.";
         }
     } else {
-        $message = "Error: No teacher selected for deletion.";
+        $message = "Error: No activity selected for deletion.";
     }
 } else {
-    // If there was an attempt to delete but no teacher_id was provided
-    if (isset($_POST['deleteTeacher']) && empty($_POST['teacher_id'])) {
-        $message = "Error: Teacher ID not found.";
+    // If there was an attempt to delete but no activity_id was provided
+    if (isset($_POST['deleteActivity']) && empty($_POST['activity_id'])) {
+        $message = "Error: Activity ID not found.";
     }
 }
 
-// VIEW TEACHERS
-$sqlFETCH = "SELECT * FROM teachers";
+// VIEW ACTIVITIES
+$sqlFETCH = "SELECT * FROM activities";
 $stmtFETCH = $pdo->prepare($sqlFETCH);
 $stmtFETCH->execute();
 
-
-// UPDATING TEACHERS
-if (isset($_POST['updateTeachers'])) {
-    $teacher_id = $_POST['teacher_id'];
+// UPDATING ACTIVITIES
+if (isset($_POST['updateActivity'])) {
+    $activity_id = $_POST['activity_id'];
     $name = $_POST['name'];
-    $subject = $_POST['subject'];
     $image = $_FILES['image']; // Get the uploaded file
 
-    if (!empty($name) && !empty($subject)) {
+    if (!empty($name)) {
         // If a new image is uploaded
         if (!empty($image['name'])) {
             $uploadDir = "../uploads/";
@@ -97,33 +92,30 @@ if (isset($_POST['updateTeachers'])) {
             }
         } else {
             // Keep the existing image path
-            $sqlFetchImage = "SELECT image FROM teachers WHERE id = :teacher_id";
+            $sqlFetchImage = "SELECT image FROM activities WHERE id = :activity_id";
             $stmtFetchImage = $pdo->prepare($sqlFetchImage);
-            $stmtFetchImage->execute(['teacher_id' => $teacher_id]);
+            $stmtFetchImage->execute(['activity_id' => $activity_id]);
             $image = $stmtFetchImage->fetchColumn();
         }
 
-        // Update the teacher's data
-        $sqlUPDATE = "UPDATE teachers SET name = :name, subject = :subject, image = :image WHERE id = :teacher_id";
+        // Update the activity's data
+        $sqlUPDATE = "UPDATE activities SET name = :name, image = :image WHERE id = :activity_id";
         $stmtUPDATE = $pdo->prepare($sqlUPDATE);
         $resultUPDATE = $stmtUPDATE->execute([
             'name' => $name,
-            'subject' => $subject,
             'image' => $image,
-            'teacher_id' => $teacher_id
+            'activity_id' => $activity_id
         ]);
 
         if ($resultUPDATE) {
-            $message = "Teacher updated successfully!";
-            header("Location: teachers.php");
+            $message = "Activity updated successfully!";
+            header("Location: activities.php");
             exit;
         } else {
-            $message = "Error: Failed to update teacher.";
+            $message = "Error: Failed to update activity.";
         }
     }
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -134,7 +126,7 @@ if (isset($_POST['updateTeachers'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="admin.css">
-    <script defer src="admin.js"></script>
+    <script defer src="activities.js"></script>
 </head>
 
 <body>
@@ -154,7 +146,7 @@ if (isset($_POST['updateTeachers'])) {
         </div>
         <div class="content">
             <div class="table-container">
-                <h2>Manage Teachers</h2>
+                <h2>Manage Activities</h2>
 
                 <?php if (!empty($message)) : ?>
                     <div class="message <?php echo (strpos($message, 'Error') === false) ? 'success' : 'error'; ?>" id="messageBox">
@@ -163,35 +155,32 @@ if (isset($_POST['updateTeachers'])) {
                     </div>
                 <?php endif; ?>
 
-                <button class="btn btn-add" onclick="openAddModal()">Add Teacher</button>
-
+                <button class="btn btn-add" onclick="openAddModal()">Add Activity</button>
 
                 <table>
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Subject</th>
                             <th>Image</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="teacherTableBody">
+                    <tbody id="activityTableBody">
                         <?php while ($info = $stmtFETCH->fetch(PDO::FETCH_ASSOC)): ?>
                             <tr>
                                 <td><?php echo $info['name']; ?></td>
-                                <td><?php echo $info['subject']; ?></td>
                                 <td>
                                     <?php if (!empty($info['image'])): ?>
-                                        <img src="<?php echo $info['image']; ?>" alt="Teacher Image" style="width: 50px; height: 50px;">
+                                        <img src="<?php echo $info['image']; ?>" alt="Activity Image" style="width: 50px; height: 50px;">
                                     <?php else: ?>
                                         No Image
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <form method="POST" action="">
-                                        <input type="hidden" name="teacher_id" value="<?php echo $info['ID']; ?>">
-                                        <button type="button" onclick="openEditModal('<?php echo $info['ID']; ?>', '<?php echo $info['name']; ?>', '<?php echo $info['subject']; ?>')" class="btn btn-edit">Edit</button>
-                                        <button type="submit" name="deleteTeacher" class="btn btn-delete">Delete</button>
+                                        <input type="hidden" name="activity_id" value="<?php echo $info['id']; ?>">
+                                        <button type="button" onclick="openEditModal('<?php echo $info['id']; ?>', '<?php echo $info['name']; ?>')" class="btn btn-edit">Edit</button>
+                                        <button type="submit" name="deleteActivity" class="btn btn-delete">Delete</button>
                                     </form>
                                 </td>
                             </tr>
@@ -202,55 +191,48 @@ if (isset($_POST['updateTeachers'])) {
         </div>
     </div>
 
-    <div id="editTeacherModal" class="modal">
+    <!-- Edit Activity Modal -->
+    <div id="editActivityModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeEditModal()">&times;</span>
-            <h2>Edit Teacher</h2>
+            <h2>Edit Activity</h2>
             <form action="" method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="teacher_id" id="edit_teacher_id">
+                <input type="hidden" name="activity_id" id="edit_activity_id">
                 <div class="form-group">
                     <label for="edit_name">Name:</label>
                     <input type="text" id="edit_name" name="name" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit_subject">Subject:</label>
-                    <input type="text" id="edit_subject" name="subject" required>
-                </div>
-                <div class="form-group">
                     <label for="edit_image">Upload New Image:</label>
                     <input type="file" id="edit_image" name="image" accept="image/*">
                 </div>
-                <button type="submit" name="updateTeachers" class="btn-submit">Update Teacher</button>
+                <button type="submit" name="updateActivity" class="btn-submit">Update Activity</button>
             </form>
         </div>
     </div>
 
-    <!-- Add Teacher Modal -->
-    <div id="addTeacherModal" class="modal">
+    <!-- Add Activity Modal -->
+    <div id="addActivityModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeAddModal()">&times;</span>
-            <h2>Add Teacher</h2>
+            <h2>Add Activity</h2>
             <form action="" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="name">Name:</label>
                     <input type="text" id="name" name="name" required>
                 </div>
                 <div class="form-group">
-                    <label for="subject">Subject:</label>
-                    <input type="text" id="subject" name="subject" required>
-                </div>
-                <div class="form-group">
                     <label for="image">Upload Image:</label>
                     <input type="file" id="image" name="image" accept="image/*" required>
                 </div>
-                <button type="submit" name="addTeacher" class="btn-submit">Add Teacher</button>
+                <button type="submit" name="addActivity" class="btn-submit">Add Activity</button>
             </form>
         </div>
     </div>
 
     <form id="deleteForm" method="POST">
-        <input type="hidden" name="teacher_id" id="teacherIdToDelete">
-        <input type="hidden" name="deleteTeacher">
+        <input type="hidden" name="activity_id" id="activityIdToDelete">
+        <input type="hidden" name="deleteActivity">
     </form>
 
 </body>
